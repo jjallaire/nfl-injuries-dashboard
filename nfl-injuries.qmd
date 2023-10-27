@@ -1,7 +1,9 @@
 ---
 title: "NFL Injuries --- 10 Weeks"
 author: "Max Bade"
-format: dashboard
+format: 
+  dashboard:
+    theme: united
 ---
 
 ```{python}
