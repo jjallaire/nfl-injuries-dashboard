@@ -1,0 +1,91 @@
+---
+title: "NFL Injuries --- 10 Weeks"
+author: "Max Bade"
+format: dashboard
+---
+
+```{python}
+# prepare data
+import pandas as pd
+injuries_df = pd.read_csv("nfl-injuries.csv")
+group_df = injuries_df.groupby(['data','year'])['row_number'].agg('count').reset_index()
+group_df.columns = ['status','year','count_players']
+
+status_avg = group_df.groupby(['status']).mean(1)['count_players'].astype('int')
+[out_avg, questionable_avg] = status_avg
+injuries_avg = out_avg + questionable_avg
+```
+
+# Stats
+
+## Row
+
+```{python}
+#| component: valuebox
+#| title: Average Injured
+dict(
+    icon = "exclamation-triangle",
+    color = "primary",
+    value = injuries_avg
+)
+```
+
+
+```{python}
+#| component: valuebox
+#| title: Average Out
+dict(
+    icon = "x-square",
+    color = "warning",
+    value = out_avg
+)
+```
+
+
+```{python}
+#| component: valuebox
+#| title: Average Questionable
+dict(
+    icon = "question-square",
+    value = questionable_avg
+)
+```
+
+
+## Row
+
+```{python}
+# injuries by status
+import plotly.express as px
+px.line(group_df,
+    x='year', y='count_players',
+    color='status', text='count_players' 
+)
+```
+
+## Row
+
+```{python}
+# total injuries
+group_df1 = group_df.groupby('year')['count_players'].agg('sum').reset_index()
+group_df1.columns = ['year','count_players']
+px.bar(group_df1
+    ,x='year'
+    ,y='count_players'
+    ,text='count_players'
+)
+```
+
+# Data
+
+This dashboard is based on Max Bade's [NFL Injury Data with BS4 & Plotly in Python](https://maxbade.medium.com/nfl-injury-data-with-bs4-plotly-in-python-f0f89309f5da) article on Medium.
+
+If you want to conduct your own analysis, see the following resources:
+
+| Resource             | Link               |
+|----------------------|--------------------|
+| Injuries Dataset     | [nfl-injuries.csv](nfl-injuries.csv) |
+| Data Scraping Script | [collect.py](collect.py)       |
+
+
+
